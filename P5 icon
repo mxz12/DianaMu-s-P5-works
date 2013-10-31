@@ -1,0 +1,88 @@
+int numPoints;
+Points []myPoints;
+float distance;
+PVector position;
+color pointsColor;
+float r;
+float minDistance,maxDistance;
+
+void setup(){
+  size(200,200);
+  background(255);
+  
+  distance=210;
+  pointsColor=0x88003c68;
+  numPoints=50;
+  minDistance = 10;
+  maxDistance = 100;
+  
+   myPoints = new Points[numPoints];
+  for(int i=0; i<numPoints;i++){
+    r=50+random(100);
+    float a =random(TWO_PI);
+    float d =random(distance);
+    //position=new PVector(random(distance)*cos(random(TWO_PI)),random(distance)*sin(random(TWO_PI)));//要明白这句话和下面一句话的区别konw the diffrence between this and next line,espicailly the at the use of "random"
+    position=new PVector(d*cos(a),d*sin(a));//不同的斜边下求,三角函数 求(x,y)
+    myPoints[i]= new Points(position,r,pointsColor);
+  }  
+}
+
+void draw(){
+  background(0);
+  for(int i = 0;i<numPoints;i++){
+   myPoints[i].update();
+   myPoints[i].drawCircle();
+  }   
+ drawLine(); 
+}
+
+void drawLine(){
+  stroke(255,150);
+  strokeWeight(.5);
+  for(int i = 0;i<numPoints;i++){
+    for(int j =i+1;j<numPoints;j++){
+      if(PVector.dist(myPoints[i].position, myPoints[j].position)>minDistance && PVector.dist(myPoints[i].position, myPoints[j].position)<maxDistance){
+      line(myPoints[i].position.x, myPoints[i].position.y,myPoints[j].position.x,myPoints[j].position.y);
+//      println(myPoints[i].position.x);
+      }
+    }
+  }
+  
+  
+}
+class Points{
+  PVector position= new PVector(0,0);
+  PVector velocity= new PVector(0,0);
+  float r;
+  color c;
+  
+  Points(PVector position,float r,color c){
+    this.r = r;
+    this.position = position; 
+    this.c = c;
+    velocity.x = random(-.5,.5);   
+    velocity.y = random(-.5,.5); 
+  }
+  
+  void update(){
+    position.x+=velocity.x;
+    position.y+=velocity.y;
+    float d =sqrt(position.x*position.x+position.y*position.y);
+    if(d>distance){
+      //d=distance;
+    velocity.y=-velocity.y;
+    velocity.x=-velocity.x; 
+        
+    }    
+  } 
+  
+  void drawCircle(){
+    noStroke();
+    fill(c);
+    ellipse(position.x, position.y,r, r);
+ 
+    stroke(255, 200);
+    strokeWeight(4);
+    point(position.x, position.y);
+  }
+}
